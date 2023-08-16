@@ -5,11 +5,14 @@ const moviesSlice = createSlice({
   initialState: {
     movies: [],
     search: [],
+    searchPage: 0,
+    moviesPage: 0,
   },
   reducers: {
     addMovies(state, action) {
       const type = action.payload.type; //could be search or could be movie list
       const append = action.payload.append;
+      const page = action.payload.page;
 
       if (!append && type === "movieList") {
         state.movies = [];
@@ -29,7 +32,9 @@ const moviesSlice = createSlice({
 
         if (type === "movieList") {
           state.movies.push({ id, title, description, rating, image });
+          state.moviesPage = page;
         } else if (type === "search") {
+          state.searchPage = page;
           state.search.push({ id, title, description, rating, image });
         }
       }

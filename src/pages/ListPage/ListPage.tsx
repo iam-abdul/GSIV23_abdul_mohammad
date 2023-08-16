@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import MovieCard from "./components/MovieCard";
 import classes from "./listPage.module.css";
-import { IMovieCard, IFetchMovies, IStore } from "../../interfaces/interfaces";
+import {
+  IMovieCard,
+  IFetchMovies,
+  IStore,
+  ISearchMovies,
+} from "../../interfaces/interfaces";
 import axios from "axios";
-import { getDiscoverURL } from "../../URL/URL";
+import { getDiscoverURL, getSearchURL } from "../../URL/URL";
 import { RotateSpinner } from "react-spinners-kit";
 import { movieActions } from "../../store/movies-slice";
 import { useDispatch, useSelector } from "react-redux";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useSearchParams, useLocation } from "react-router-dom";
+
 // import.meta.env.VITE_BACKEND_URL
 
 const fetchMovies: (e: IFetchMovies) => void = async ({
@@ -15,6 +22,7 @@ const fetchMovies: (e: IFetchMovies) => void = async ({
   token,
   setLoading,
   dispatch,
+  page,
 }) => {
   try {
     // setLoading(true);
@@ -30,6 +38,7 @@ const fetchMovies: (e: IFetchMovies) => void = async ({
         movies: movies,
         append: true,
         type: "movieList",
+        page: page,
       })
     );
     setLoading(false);
@@ -39,25 +48,80 @@ const fetchMovies: (e: IFetchMovies) => void = async ({
   }
 };
 
+const searchMovies: (e: ISearchMovies) => void = async ({
+  url,
+  token,
+  dispatch,
+  page,
+}) => {
+  try {
+    let searchResult = await axios.get(url, {
+      headers: { Authorization: "Bearer " + token },
+    });
+    searchResult = searchResult.data.results;
+    console.log("searchResult received ", searchResult);
+    dispatch(
+      movieActions.addMovies({
+        movies: searchResult,
+        append: page > 1,
+        type: "search",
+        page: page,
+      })
+    );
+  } catch (err) {
+    console.log("err searching movies ", err);
+  }
+};
+
 const ListMovies: React.FunctionComponent = () => {
   const token = import.meta.env.VITE_MOVIEDB;
   const [loading, setLoading] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(1);
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("query");
+  const currentPath = useLocation().pathname;
   const moviesList: IMovieCard[] = useSelector(
     (state: IStore) => state.movies.movies
   );
+  const searchMoviesList: IMovieCard[] = useSelector(
+    (state: IStore) => state.movies.search
+  );
+  const moviesPage: number = useSelector(
+    (state: IStore) => state.movies.moviesPage
+  );
+  const searchPage: number = useSelector(
+    (state: IStore) => state.movies.searchPage
+  );
+  const [page, setPage] = useState<number>(
+    currentPath === "/"
+      ? moviesPage === 0
+        ? 1
+        : moviesPage
+      : searchPage === 0
+      ? 1
+      : searchPage
+  );
 
   useEffect(() => {
-    fetchMovies({
-      url: getDiscoverURL(page),
-      token: token,
-      setLoading,
-      dispatch,
-    });
+    if (currentPath === "/" && page > moviesPage) {
+      fetchMovies({
+        url: getDiscoverURL(page),
+        token: token,
+        setLoading,
+        dispatch,
+        page,
+      });
+    } else if (currentPath === "/search" && page > searchPage) {
+      searchMovies({
+        url: getSearchURL(query ? query : "", page),
+        token: token,
+        dispatch: dispatch,
+        page: page,
+      });
+    }
   }, [page]);
 
-  console.log("the movies list ", moviesList);
+  console.log("the movies list ", searchMoviesList);
 
   const loader = (
     <div className={classes.loader}>
@@ -71,7 +135,9 @@ const ListMovies: React.FunctionComponent = () => {
 
   return (
     <InfiniteScroll
-      dataLength={moviesList.length}
+      dataLength={
+        currentPath === "/" ? moviesList.length : searchMoviesList.length
+      }
       next={() => {
         setPage((p) => p + 1);
       }}
@@ -80,9 +146,13 @@ const ListMovies: React.FunctionComponent = () => {
       style={{ overflow: "visible" }}
     >
       <div className={classes.parent}>
-        {moviesList.map((el) => (
-          <MovieCard key={el.id} {...el} />
-        ))}
+        {currentPath === "/search"
+          ? searchMoviesList.map((el) => <MovieCard key={el.id} {...el} />)
+          : ""}
+
+        {currentPath === "/"
+          ? moviesList.map((el) => <MovieCard key={el.id} {...el} />)
+          : ""}
       </div>
     </InfiniteScroll>
   );
