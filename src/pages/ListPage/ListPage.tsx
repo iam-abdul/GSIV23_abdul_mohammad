@@ -7,6 +7,7 @@ import { getDiscoverURL } from "../../URL/URL";
 import { RotateSpinner } from "react-spinners-kit";
 import { movieActions } from "../../store/movies-slice";
 import { useDispatch, useSelector } from "react-redux";
+import InfiniteScroll from "react-infinite-scroll-component";
 // import.meta.env.VITE_BACKEND_URL
 
 const fetchMovies: (e: IFetchMovies) => void = async ({
@@ -16,7 +17,7 @@ const fetchMovies: (e: IFetchMovies) => void = async ({
   dispatch,
 }) => {
   try {
-    setLoading(true);
+    // setLoading(true);
     let movies = await axios.get(url, {
       headers: { Authorization: "Bearer " + token },
     });
@@ -41,31 +42,49 @@ const fetchMovies: (e: IFetchMovies) => void = async ({
 const ListMovies: React.FunctionComponent = () => {
   const token = import.meta.env.VITE_MOVIEDB;
   const [loading, setLoading] = useState<boolean>(false);
+  const [page, setPage] = useState<number>(1);
   const dispatch = useDispatch();
   const moviesList: IMovieCard[] = useSelector(
     (state: IStore) => state.movies.movies
   );
 
   useEffect(() => {
-    fetchMovies({ url: getDiscoverURL(1), token: token, setLoading, dispatch });
-  }, []);
+    fetchMovies({
+      url: getDiscoverURL(page),
+      token: token,
+      setLoading,
+      dispatch,
+    });
+  }, [page]);
 
   console.log("the movies list ", moviesList);
 
+  const loader = (
+    <div className={classes.loader}>
+      <RotateSpinner color={"#4d4d4d"} />
+    </div>
+  );
+
   if (loading) {
-    return (
-      <div className={classes.loader}>
-        <RotateSpinner color={"#4d4d4d"} />
-      </div>
-    );
+    return loader;
   }
 
   return (
-    <div className={classes.parent}>
-      {moviesList.map((el) => (
-        <MovieCard key={el.id} {...el} />
-      ))}
-    </div>
+    <InfiniteScroll
+      dataLength={moviesList.length}
+      next={() => {
+        setPage((p) => p + 1);
+      }}
+      hasMore={true}
+      loader={loader}
+      style={{ overflow: "visible" }}
+    >
+      <div className={classes.parent}>
+        {moviesList.map((el) => (
+          <MovieCard key={el.id} {...el} />
+        ))}
+      </div>
+    </InfiniteScroll>
   );
 };
 
