@@ -12,6 +12,7 @@
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  cursor: pointer;
 }
 .parent img {
   /* height: max-content; */
