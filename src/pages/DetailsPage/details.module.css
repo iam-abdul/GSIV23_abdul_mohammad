@@ -1,0 +1,28 @@
+.parent {
+  display: flex;
+  gap: 10px;
+}
+.parent img {
+  max-height: 300px;
+}
+.parent h2 {
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.title_section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.title_section span {
+  font-size: 0.9rem;
+  align-self: center;
+}
+.year_and_run {
+  margin-bottom: 2px;
+}

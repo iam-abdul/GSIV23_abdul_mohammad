@@ -1,8 +1,16 @@
 import classes from "./movieCard.module.css";
 import { IMovieCard } from "../../../interfaces/interfaces";
+import { useNavigate } from "react-router-dom";
 const MovieCard = (props: IMovieCard) => {
+  const navigate = useNavigate();
+
   return (
-    <div className={classes.parent}>
+    <div
+      className={classes.parent}
+      onClick={() => {
+        navigate("/details?id=" + props.id);
+      }}
+    >
       <img src={props.image} alt="" />
       <div className={classes.content}>
         <div className={classes.wrapper}>

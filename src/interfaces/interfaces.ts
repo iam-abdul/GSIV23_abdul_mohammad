@@ -14,15 +14,6 @@ export interface IFetchMovies {
   setLoading: (e: boolean) => void;
   page: number;
 }
-export interface IStore {
-  movies: {
-    movies: IMovieCard[];
-    search: IMovieCard[];
-    searchPage: number;
-    moviesPage: number;
-    lastSearchQuery: string;
-  };
-}
 
 export interface ISearchMovies {
   url: string;
@@ -33,4 +24,34 @@ export interface ISearchMovies {
   page: number;
   query: string;
   lastSearchQuery: string;
+}
+
+export interface IFetchMovieDetails {
+  url: string;
+  token: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  dispatch: (a: any) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setLoading: (a: any) => void;
+}
+
+export interface IMovieDetails {
+  title: string;
+  description: string;
+  rating: number;
+  image: string;
+  id: number;
+  cast: { cast: { name: string }[]; crew: { name: string; job: string }[] };
+  year: string;
+  length: string;
+}
+export interface IStore {
+  movies: {
+    movies: IMovieCard[];
+    search: IMovieCard[];
+    movie_details: IMovieDetails[];
+    searchPage: number;
+    moviesPage: number;
+    lastSearchQuery: string;
+  };
 }

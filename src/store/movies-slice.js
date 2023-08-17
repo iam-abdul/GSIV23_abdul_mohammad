@@ -5,6 +5,7 @@ const moviesSlice = createSlice({
   initialState: {
     movies: [],
     search: [],
+    movie_details: [],
     searchPage: 0,
     moviesPage: 0,
     lastSearchQuery: "",
@@ -56,6 +57,30 @@ const moviesSlice = createSlice({
       state.searchPage = 0;
       state.search = [];
       state.lastSearchQuery = "";
+    },
+    addMovieDetails(state, action) {
+      const details = action.payload.details;
+      const title = details.title;
+      const description = details.overview;
+      const rating = details.vote_average;
+      const image = details.poster_path
+        ? "http://image.tmdb.org/t/p/w154" + details.poster_path
+        : "https://dummyimage.com/200x300/000/fff";
+      const id = details.id;
+      const cast = details.credits;
+      const year = details.release_date;
+      const length = details.runtime;
+
+      state.movie_details.push({
+        title,
+        description,
+        rating,
+        image,
+        id,
+        cast,
+        year,
+        length,
+      });
     },
   },
 });
