@@ -9,6 +9,7 @@ import {
 } from "../../interfaces/interfaces";
 import { movieActions } from "../../store/movies-slice";
 import { useDispatch, useSelector } from "react-redux";
+import { RotateSpinner } from "react-spinners-kit";
 
 const fetchMovieDetails: (e: IFetchMovieDetails) => void = async ({
   url,
@@ -61,7 +62,11 @@ const DetailsPage: React.FunctionComponent = () => {
   }, [id]);
 
   if (loading || !thisMovie) {
-    return <div>Loading</div>;
+    return (
+      <div className={classes.loader}>
+        <RotateSpinner color={"#4d4d4d"} />
+      </div>
+    );
   }
 
   const director = thisMovie.cast.crew.filter((el) => el.job === "Director")[0];
