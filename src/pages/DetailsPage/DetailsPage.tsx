@@ -48,10 +48,10 @@ const DetailsPage: React.FunctionComponent = () => {
 
   const thisMovie = movieDetailsList.filter((el) => el.id === Number(id))[0];
 
-  console.log(movieDetailsList);
+  //   console.log(movieDetailsList);
 
   useEffect(() => {
-    if (id) {
+    if (id && !thisMovie) {
       fetchMovieDetails({
         url: getMovieDetailsURL(id),
         token,
@@ -74,7 +74,7 @@ const DetailsPage: React.FunctionComponent = () => {
   return (
     <div className={classes.parent}>
       <div>
-        <img src={thisMovie.image} alt="" />
+        <img height={"300"} width={"200"} src={thisMovie.image} alt="" />
       </div>
       <div className={classes.content}>
         <div className={classes.title_section}>

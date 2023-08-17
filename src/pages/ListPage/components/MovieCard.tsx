@@ -11,7 +11,7 @@ const MovieCard = (props: IMovieCard) => {
         navigate("/details?id=" + props.id);
       }}
     >
-      <img src={props.image} alt="" />
+      <img width={"200"} height={"300"} src={props.image} alt="" />
       <div className={classes.content}>
         <div className={classes.wrapper}>
           <div className={classes.rating}>
