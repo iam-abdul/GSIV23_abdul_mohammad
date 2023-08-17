@@ -7,6 +7,7 @@ const moviesSlice = createSlice({
     search: [],
     searchPage: 0,
     moviesPage: 0,
+    lastSearchQuery: "",
   },
   reducers: {
     addMovies(state, action) {
@@ -16,8 +17,10 @@ const moviesSlice = createSlice({
 
       if (!append && type === "movieList") {
         state.movies = [];
+        state.moviesPage = 0;
       } else if (!append && type === "search") {
         state.search = [];
+        state.searchPage = 0;
       }
 
       for (let x = 0; x < action.payload.movies.length; x++) {
@@ -32,11 +35,19 @@ const moviesSlice = createSlice({
 
         if (type === "movieList") {
           state.movies.push({ id, title, description, rating, image });
-          state.moviesPage = page;
         } else if (type === "search") {
-          state.searchPage = page;
           state.search.push({ id, title, description, rating, image });
         }
+      }
+
+      if (type === "search") {
+        state.lastSearchQuery = action.payload.query;
+      }
+
+      if (type === "movieList") {
+        state.moviesPage = page;
+      } else if (type === "search") {
+        state.searchPage = page - 1;
       }
     },
   },

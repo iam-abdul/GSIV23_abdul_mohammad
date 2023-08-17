@@ -20,6 +20,7 @@ export interface IStore {
     search: IMovieCard[];
     searchPage: number;
     moviesPage: number;
+    lastSearchQuery: string;
   };
 }
 
@@ -29,4 +30,6 @@ export interface ISearchMovies {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: (a: any) => void;
   page: number;
+  query: string;
+  lastSearchQuery: string;
 }

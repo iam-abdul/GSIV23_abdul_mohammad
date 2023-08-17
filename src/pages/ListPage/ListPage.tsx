@@ -31,7 +31,7 @@ const fetchMovies: (e: IFetchMovies) => void = async ({
     });
 
     movies = movies.data.results;
-    console.log("movies received ", movies);
+    // console.log("movies received ", movies);
 
     dispatch(
       movieActions.addMovies({
@@ -53,19 +53,22 @@ const searchMovies: (e: ISearchMovies) => void = async ({
   token,
   dispatch,
   page,
+  query,
+  lastSearchQuery,
 }) => {
   try {
     let searchResult = await axios.get(url, {
       headers: { Authorization: "Bearer " + token },
     });
     searchResult = searchResult.data.results;
-    console.log("searchResult received ", searchResult);
+    // console.log("searchResult received ", searchResult);
     dispatch(
       movieActions.addMovies({
         movies: searchResult,
-        append: page > 1,
+        append: page > 1 && query !== lastSearchQuery,
         type: "search",
         page: page,
+        query: query,
       })
     );
   } catch (err) {
@@ -92,6 +95,9 @@ const ListMovies: React.FunctionComponent = () => {
   const searchPage: number = useSelector(
     (state: IStore) => state.movies.searchPage
   );
+  const lastSearchQuery: string = useSelector(
+    (state: IStore) => state.movies.lastSearchQuery
+  );
   const [page, setPage] = useState<number>(
     currentPath === "/"
       ? moviesPage === 0
@@ -111,17 +117,22 @@ const ListMovies: React.FunctionComponent = () => {
         dispatch,
         page,
       });
-    } else if (currentPath === "/search" && page > searchPage) {
+    } else if (currentPath === "/search" && query && page > searchPage) {
       searchMovies({
-        url: getSearchURL(query ? query : "", page),
+        url: getSearchURL(query, page),
         token: token,
         dispatch: dispatch,
         page: page,
+        query: query,
+        lastSearchQuery,
       });
     }
+    console.log(
+      `use effect page: ${page} -- search page: ${searchPage} -- query: ${query} -- last search query: ${lastSearchQuery}`
+    );
   }, [page]);
 
-  console.log("the movies list ", searchMoviesList);
+  // console.log("the movies list ", searchMoviesList);
 
   const loader = (
     <div className={classes.loader}>
@@ -146,7 +157,7 @@ const ListMovies: React.FunctionComponent = () => {
       style={{ overflow: "visible" }}
     >
       <div className={classes.parent}>
-        {currentPath === "/search"
+        {currentPath === "/search" && lastSearchQuery === query
           ? searchMoviesList.map((el) => <MovieCard key={el.id} {...el} />)
           : ""}
 
