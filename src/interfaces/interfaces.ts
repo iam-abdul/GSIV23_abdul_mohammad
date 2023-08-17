@@ -29,6 +29,7 @@ export interface ISearchMovies {
   token: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dispatch: (a: any) => void;
+
   page: number;
   query: string;
   lastSearchQuery: string;

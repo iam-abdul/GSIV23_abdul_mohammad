@@ -14,6 +14,7 @@ const moviesSlice = createSlice({
       const type = action.payload.type; //could be search or could be movie list
       const append = action.payload.append;
       const page = action.payload.page;
+      const query = action.payload.query;
 
       if (!append && type === "movieList") {
         state.movies = [];
@@ -21,6 +22,7 @@ const moviesSlice = createSlice({
       } else if (!append && type === "search") {
         state.search = [];
         state.searchPage = 0;
+        state.lastSearchQuery = query;
       }
 
       for (let x = 0; x < action.payload.movies.length; x++) {
@@ -41,14 +43,19 @@ const moviesSlice = createSlice({
       }
 
       if (type === "search") {
-        state.lastSearchQuery = action.payload.query;
+        state.lastSearchQuery = query;
       }
 
       if (type === "movieList") {
         state.moviesPage = page;
       } else if (type === "search") {
-        state.searchPage = page - 1;
+        state.searchPage = page;
       }
+    },
+    newSearchResetStore(state) {
+      state.searchPage = 0;
+      state.search = [];
+      state.lastSearchQuery = "";
     },
   },
 });
