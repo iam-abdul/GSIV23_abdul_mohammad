@@ -152,7 +152,7 @@ const ListMovies: React.FunctionComponent = () => {
   // console.log("the movies list ", searchMoviesList);
 
   const loader = (
-    <div className={classes.loader}>
+    <div data-testid="list-movies-loading" className={classes.loader}>
       <RotateSpinner color={"#4d4d4d"} />
     </div>
   );
